@@ -1,0 +1,144 @@
+[
+  {
+    "type": "human",
+    "data": {
+      "content": "访问 https://www.python.org 并提取所有链接，然后对页面进行截图",
+      "additional_kwargs": {},
+      "response_metadata": {},
+      "type": "human",
+      "name": null,
+      "id": "bcc6eeb8-bc94-40be-b805-a6b975c9a76f"
+    }
+  },
+  {
+    "type": "ai",
+    "data": {
+      "content": "",
+      "additional_kwargs": {
+        "refusal": null
+      },
+      "response_metadata": {
+        "token_usage": {
+          "completion_tokens": 159,
+          "prompt_tokens": 590,
+          "total_tokens": 749,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": null,
+            "reasoning_tokens": 104,
+            "rejected_prediction_tokens": null
+          },
+          "prompt_tokens_details": null
+        },
+        "model_provider": "openai",
+        "model_name": "deepseek-r1",
+        "system_fingerprint": null,
+        "id": "chatcmpl-376cf01f-8d37-9450-bab2-d063d388b07d",
+        "finish_reason": "tool_calls",
+        "logprobs": null
+      },
+      "type": "ai",
+      "name": null,
+      "id": "lc_run--019b68fb-9198-7ad2-a93d-393be75696e3-0",
+      "tool_calls": [
+        {
+          "name": "extract_links",
+          "args": {
+            "url": "https://www.python.org"
+          },
+          "id": "call_1a0f89cffc0c48738eb36b",
+          "type": "tool_call"
+        },
+        {
+          "name": "take_screenshot",
+          "args": {
+            "url": "https://www.python.org"
+          },
+          "id": "call_600a2509638c49bb929d4e",
+          "type": "tool_call"
+        }
+      ],
+      "invalid_tool_calls": [],
+      "usage_metadata": {
+        "input_tokens": 590,
+        "output_tokens": 159,
+        "total_tokens": 749,
+        "input_token_details": {},
+        "output_token_details": {
+          "reasoning": 104
+        }
+      }
+    }
+  },
+  {
+    "type": "tool",
+    "data": {
+      "content": "{\"url\": \"https://www.python.org\", \"links_count\": 222, \"links\": [{\"href\": \"https://www.python.org/#content\", \"text\": \"Skip to content\"}, {\"href\": \"https://www.python.org/#python-network\", \"text\": \"▼ Close\"}, {\"href\": \"https://www.python.org/\", \"text\": \"Python\"}, {\"href\": \"https://www.python.org/psf/\", \"text\": \"PSF\"}, {\"href\": \"https://docs.python.org/\", \"text\": \"Docs\"}, {\"href\": \"https://pypi.org/\", \"text\": \"PyPI\"}, {\"href\": \"https://www.python.org/jobs/\", \"text\": \"Jobs\"}, {\"href\": \"https://www.python.org/community/\", \"text\": \"Community\"}, {\"href\": \"https://www.python.org/#top\", \"text\": \"▲ The Python Network\"}, {\"href\": \"https://www.python.org/\", \"text\": \"\"}, {\"href\": \"https://donate.python.org/\", \"text\": \"Donate\"}, {\"href\": \"https://www.python.org/#site-map\", \"text\": \"≡ Menu\"}, {\"href\": \"https://www.python.org/#\", \"text\": \"A A\"}, {\"href\": \"javascript:;\", \"text\": \"Smaller\"}, {\"href\": \"javascript:;\", \"text\": \"Larger\"}, {\"href\": \"javascript:;\", \"text\": \"Reset\"}, {\"href\": \"https://www.python.org/#\", \"text\": \"Socialize\"}, {\"href\": \"https://www.linkedin.com/company/python-software-foundation/\", \"text\": \"LinkedIn\"}, {\"href\": \"https://fosstodon.org/@ThePSF\", \"text\": \"Mastodon\"}, {\"href\": \"https://www.python.org/community/irc/\", \"text\": \"Chat on IRC\"}]}",
+      "additional_kwargs": {},
+      "response_metadata": {},
+      "type": "tool",
+      "name": "extract_links",
+      "id": "f942f7ef-3efa-4b73-9552-6a6869b120d8",
+      "tool_call_id": "call_1a0f89cffc0c48738eb36b",
+      "artifact": null,
+      "status": "success"
+    }
+  },
+  {
+    "type": "tool",
+    "data": {
+      "content": "{\"screenshot_path\": \"/Users/admins/work/czl/agent-python/openai/screenshot_1766992897.png\", \"url\": \"https://www.python.org\"}",
+      "additional_kwargs": {},
+      "response_metadata": {},
+      "type": "tool",
+      "name": "take_screenshot",
+      "id": "38716ad0-7d9f-493d-84e8-698e14b1edfe",
+      "tool_call_id": "call_600a2509638c49bb929d4e",
+      "artifact": null,
+      "status": "success"
+    }
+  },
+  {
+    "type": "ai",
+    "data": {
+      "content": "我已成功访问了 https://www.python.org 并完成了以下操作：\n\n1. **提取所有链接**：  \n   共提取了 222 个链接。以下是部分示例链接：\n   - [Skip to content](https://www.python.org/#content)\n   - [Python](https://www.python.org/)\n   - [PSF](https://www.python.org/psf/)\n   - [Docs](https://docs.python.org/)\n   - [PyPI](https://pypi.org/)\n\n2. **页面截图**：  \n   截图已保存至以下路径：  \n   `/Users/admins/work/czl/agent-python/openai/screenshot_1766992897.png`\n\n如果需要完整链接列表或进一步操作，请告诉我！",
+      "additional_kwargs": {
+        "refusal": null
+      },
+      "response_metadata": {
+        "token_usage": {
+          "completion_tokens": 274,
+          "prompt_tokens": 1113,
+          "total_tokens": 1387,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": null,
+            "reasoning_tokens": 109,
+            "rejected_prediction_tokens": null
+          },
+          "prompt_tokens_details": null
+        },
+        "model_provider": "openai",
+        "model_name": "deepseek-r1",
+        "system_fingerprint": null,
+        "id": "chatcmpl-8e65fe47-3d63-9a9a-b2b6-9f9270bd5317",
+        "finish_reason": "stop",
+        "logprobs": null
+      },
+      "type": "ai",
+      "name": null,
+      "id": "lc_run--019b68fb-e837-7802-8a70-5a842c561718-0",
+      "tool_calls": [],
+      "invalid_tool_calls": [],
+      "usage_metadata": {
+        "input_tokens": 1113,
+        "output_tokens": 274,
+        "total_tokens": 1387,
+        "input_token_details": {},
+        "output_token_details": {
+          "reasoning": 109
+        }
+      }
+    }
+  }
+]

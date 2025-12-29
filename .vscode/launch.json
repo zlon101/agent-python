@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "debugpy", // 对应 Node 的 "pwa-node"
+            "request": "launch",
+            "program": "${file}", // 运行当前打开的文件
+            "console": "integratedTerminal",
+            "env": {
+                // 如果没用 python-dotenv，也可以在这里注入环境变量
+                // "OPENAI_API_KEY": "sk-..." 
+            },
+            // 类似于 Node 的 sourceMaps，允许你进入库源码调试,忽略库代码
+            "justMyCode": true 
+        }
+    ]
+}
