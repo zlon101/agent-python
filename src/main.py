@@ -7,16 +7,12 @@ from pydantic import SecretStr
 # --- 1. Imports ---
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
-from langchain_core.messages import messages_to_dict # 官方提供的转换工具
-# 注意：这里直接使用你 debug 出来的 create_agent
-from langchain.agents import create_agent
+from langchain.agents import create_agent 
 from langchain_core.messages import HumanMessage
-
-# 导入 Puppeteer 工具
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from puppeteer.puppeteer_tools import get_puppeteer_tools
+from langchain_core.messages import messages_to_dict # 官方提供的转换工具
+from langchain_community.agent_toolkits import PlaywrightBrowserToolkit
+from langchain_community.tools.playwright.utils import create_sync_playwright_browser
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 load_dotenv()
 
@@ -25,16 +21,51 @@ def add(a: int, b: int) -> int:
     """Add two integers together."""
     return a + b
 
-@tool
-def get_weather(city: str) -> str:
-    """Get the current weather for a city."""
-    return f"The weather in {city} is sunny and 25°C."
+# 1. 初始化 Browser (Sync 模式)
+# create_sync_playwright_browser 会自动启动一个 headless=True 的浏览器实例
+sync_browser = create_sync_playwright_browser(headless=False)
 
-# 获取 Puppeteer 工具
-puppeteer_tools = get_puppeteer_tools()
+# 2. 加载工具集 (The Toolkit)
+# 这相当于引入了一个 "UI Automation Hook" 库
+# 它会自动提供以下工具给 Agent:
+# - click_element: 点击
+# - navigate_browser: 跳转 URL
+# - extract_text: 获取 innerText
+# - extract_content: 获取 HTML
+# - current_page: 获取当前 URL
+toolkit = PlaywrightBrowserToolkit.from_browser(sync_browser=sync_browser)
+playwright_tools = toolkit.get_tools()
+
+# 打印一下看看 LLM 能用到哪些工具
+# 类似 console.log(Object.keys(tools))
+print("--- Available Tools ---")
+for tool in playwright_tools:
+    print(f"- {tool.name}: {tool.description}")
 
 # 合并所有工具
-tools = [add, get_weather] + puppeteer_tools
+tools = [add] + playwright_tools
+
+# 3. 创建 Agent
+# 这是一个专门设计的 Prompt，教 Agent 如何做一个 "Web Surfer"
+
+system_prompt = """
+You are an autonomous browser agent. 
+Your goal is to browse the web and perform tasks given by the user.
+
+RULES:
+1. You have tools to navigate, click elements, and extract text.
+2. ALWAYS use 'extract_text' or 'extract_content' to read the page content immediately after navigating.
+3. If you need to click something, look at the extracted HTML/Text to infer the correct selector.
+4. If you achieve the goal, just answer the user's question directly.
+"""
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", system_prompt),
+    ("human", "{input}"),
+    MessagesPlaceholder(variable_name="agent_scratchpad"),
+])
+
+# 4. 初始化 LLM
 llm = ChatOpenAI(
     api_key=SecretStr(os.getenv("ALIBABA_API_KEY") or ""),
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
@@ -42,39 +73,41 @@ llm = ChatOpenAI(
     # qwen-plus
     model="deepseek-r1",
 )
-
-# 它内部自动处理了 Prompt 模板和 Tool Calling 的循环
 agent_runner = create_agent(
     model=llm,
     tools=tools,
-    # 这里的 system_prompt 替代了以前复杂的 ChatPromptTemplate
-    system_prompt="You are a helpful assistant. You must use tools to answer questions.",
+    system_prompt=system_prompt
 )
 
 def main():
-    # input_text = "4 + 8 等于多少?"
-    input_text = "帮我浏览一下 https://segmentfault.com/ ，输出主要内容，并将页面截图保存在本地。"
+    try:
+        print("\n--- Mission Start ---")
+        # 任务：访问 SegmentFault 网站，获取主要内容，并进行截图
+        task = "Go to https://segmentfault.com/. Extract the main content and take a screenshot of the page."
+        result = agent_runner.invoke({"messages": [HumanMessage(content=task)]})
 
-    print(f"正在处理请求: {input_text}")
+        print("\n--- Final Answer ---")
+        print(result["output"])
 
-    result = agent_runner.invoke({"messages": [HumanMessage(content=input_text)]})
+        result_data = {
+            "input_task": task,
+            "output": result["output"],
+            "intermediate_steps": result.get("intermediate_steps", [])
+        }
+        json_str = json.dumps(result_data, indent=2, ensure_ascii=False)
 
-    # 步骤 1: 将 Message 对象列表转换为普通的 List/Dict 结构
-    # 类似于: const rawData = messages.map(m => m.toJSON());
-    messages_dict = messages_to_dict(result["messages"])
+        # 保存 JSON 字符串到项目根目录的文件中
+        with open("result.json", "w", encoding="utf-8") as f:
+            f.write(json_str)
 
-    # 步骤 2: 序列化为 JSON 字符串
-    # ensure_ascii=False: 允许输出中文等非 ASCII 字符，而不是 \uXXXX
-    # indent=2: 美化输出，类似 JS 的 space 参数
-    json_str = json.dumps(messages_dict, indent=2, ensure_ascii=False)
-    print("\n--- Final Result ---\n")
-    print(json_str)
+        print("\n--- Result saved to result.json ---\n")
 
-    # 步骤 3: 保存 JSON 字符串到项目根目录的文件中
-    with open("result.json", "w", encoding="utf-8") as f:
-        f.write(json_str)
-
-    print("\n--- Result saved to result.json ---\n")
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        # 关闭浏览器
+        print("Closing browser...")
+        # 注意：在实际应用中，最好使用 Context Manager 来确保浏览器被正确关闭
 
 
 if __name__ == "__main__":
