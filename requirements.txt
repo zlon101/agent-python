@@ -1,10 +1,27 @@
+# LangChain 核心依赖
 langchain==1.2.0
 langchain-core==1.2.3
 langchain-openai==1.1.6
 langchain-community==0.4.1
+
+# OpenAI SDK
 openai==2.13.0
-python-dotenv==1.2.1
-pydantic==2.12.5
+
+# 浏览器自动化
 playwright==1.48.0
+
+# HTML 解析
 beautifulsoup4==4.12.3
 lxml==6.0.2
+
+# 异步 HTTP（用于 CDP 检测）
+aiohttp==3.9.1
+
+# 环境变量管理
+python-dotenv==1.2.1
+
+# 数据验证
+pydantic==2.12.5
+
+# 可选：日志美化
+rich==13.7.0
