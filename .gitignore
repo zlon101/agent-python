@@ -3,3 +3,4 @@
 __pycache__/
 screenshot_*.png
 results.json
+**/__pycache__/
