@@ -4,3 +4,7 @@ __pycache__/
 screenshot_*.png
 results.json
 **/__pycache__/
+.DS_Store
+.env
+log.json
+*.png

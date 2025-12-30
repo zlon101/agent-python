@@ -28,6 +28,8 @@ def get_browser_tools(browser: Browser) -> List[BaseTool]:
             if not browser.contexts:
                 return "No open browser context found. Please navigate to a page first."
 
+            if not browser.contexts or not browser.contexts[0].pages:
+                return "请先导航到网页"
             page = browser.contexts[0].pages[0]
             await page.screenshot(path=filename)
             return f"Screenshot successfully saved to {filename}"
