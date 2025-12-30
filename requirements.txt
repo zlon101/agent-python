@@ -7,3 +7,4 @@ python-dotenv==1.2.1
 pydantic==2.12.5
 playwright==1.48.0
 beautifulsoup4==4.12.3
+lxml==6.0.2
