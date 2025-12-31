@@ -9,10 +9,10 @@ from dotenv import load_dotenv
 from pathlib import Path
 from langchain_core.messages import HumanMessage
 
-
-from lib.browser import BrowserManager
-from lib.custom_agent import create_custom_agent
-from lib.puppeteer import get_browser_tools, get_table_scraping_tools
+sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
+from browser import BrowserManager
+from custom_agent import create_custom_agent
+from puppeteer import get_browser_tools, get_table_scraping_tools
 
 load_dotenv()
 

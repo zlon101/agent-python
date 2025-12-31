@@ -6,9 +6,12 @@
 
 import asyncio
 import argparse
+import sys
 from pathlib import Path
-from lib.browser import BrowserManager
-from lib.puppeteer import TableScraper
+
+sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
+from browser import BrowserManager
+from puppeteer import TableScraper
 
 
 async def quick_scrape(args):

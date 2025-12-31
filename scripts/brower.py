@@ -7,11 +7,12 @@ import sys
 import asyncio
 import argparse
 from pathlib import Path
-
 from dotenv import load_dotenv
-from lib.browser import BrowserManager
-from lib.custom_agent import create_custom_agent, add
-from lib.puppeteer import get_browser_tools
+
+sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
+from browser import BrowserManager
+from custom_agent import create_custom_agent, add
+from puppeteer import get_browser_tools
 
 load_dotenv()
 
