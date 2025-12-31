@@ -2,7 +2,7 @@
 """
 快速启动脚本 - 提供简单的命令行界面
 """
-
+import os
 import sys
 import asyncio
 import argparse
@@ -18,6 +18,8 @@ from puppeteer.puppeteer_tools import get_browser_tools
 from custom_agent.agent_tools import add
 
 load_dotenv()
+
+cdp_url = os.getenv("CDP_URL")
 
 async def run_task(args):
     """执行单个任务"""

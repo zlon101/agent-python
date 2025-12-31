@@ -1,7 +1,7 @@
 """
 使用示例 - 展示不同的浏览器 Agent 用法
 """
-
+import os
 import asyncio
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
@@ -12,7 +12,7 @@ from puppeteer.puppeteer_tools import get_browser_tools
 from custom_agent.agent_tools import add
 
 load_dotenv()
-
+cdp_url = os.getenv("CDP_URL")
 
 # ==========================================
 # 示例 1: 启动新浏览器
@@ -24,7 +24,7 @@ async def example_launch_browser():
     print("📌 Example 1: Launch New Browser")
     print("="*60 + "\n")
     
-    async with BrowserManager(mode="launch", headless=False) as bm:
+    async with BrowserManager(cdp_url=cdp_url, mode="launch", headless=False) as bm:
         browser = bm.get_browser()
         tools = get_browser_tools(browser)
         agent = create_custom_agent(tools=tools)
@@ -46,12 +46,12 @@ async def example_connect_chrome():
     print("="*60 + "\n")
     
     try:
-        async with BrowserManager(mode="connect") as bm:
+        async with BrowserManager(cdp_url=cdp_url, mode="connect") as bm:
             browser = bm.get_browser()
             tools = get_browser_tools(browser)
             agent = create_custom_agent(tools=tools)
             
-            task = "Get the current page title and URL"
+            task = "打开 https://www.bing.com 然后截图，保存为 'bing.png'"
             result = await agent.ainvoke({"messages": [HumanMessage(content=task)]})
             
             print(f"\n✅ Result: {result['messages'][-1].content}")
@@ -75,7 +75,7 @@ async def example_custom_cdp():
     cdp_url = "http://localhost:9222"
     
     try:
-        async with BrowserManager(mode="connect", cdp_url=cdp_url) as bm:
+        async with BrowserManager(cdp_url=cdp_url, mode="connect") as bm:
             info = bm.get_info()
             print(f"📊 Browser Info: {info}")
     
@@ -93,7 +93,7 @@ async def example_multiple_tasks():
     print("📌 Example 4: Multiple Tasks")
     print("="*60 + "\n")
     
-    async with BrowserManager(mode="launch", headless=False) as bm:
+    async with BrowserManager(cdp_url=cdp_url, mode="launch", headless=False) as bm:
         browser = bm.get_browser()
         tools = get_browser_tools(browser)
         agent = create_custom_agent(tools=tools)
@@ -122,7 +122,7 @@ async def example_browser_info():
     
     from browser.detector import get_chrome_pages
     
-    async with BrowserManager(mode="connect") as bm:
+    async with BrowserManager(cdp_url=cdp_url, mode="connect") as bm:
         info = bm.get_info()
         
         print("🔍 Browser Status:")
@@ -187,7 +187,7 @@ async def example_custom_tools():
         percentage = (value / total) * 100
         return f"{percentage:.2f}%"
     
-    async with BrowserManager(mode="launch", headless=False) as bm:
+    async with BrowserManager(cdp_url=cdp_url, mode="launch", headless=False) as bm:
         browser = bm.get_browser()
         browser_tools = get_browser_tools(browser)
         
