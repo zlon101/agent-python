@@ -5,6 +5,7 @@ Agent 自动抓取分页表格示例
 
 import asyncio
 import sys
+import os
 from dotenv import load_dotenv
 from pathlib import Path
 from langchain_core.messages import HumanMessage
@@ -28,7 +29,7 @@ async def agent_scrape_table(task: str):
     print("🤖 Agent 自动抓取表格")
     print("="*60 + "\n")
     
-    async with BrowserManager(mode="connect") as bm:
+    async with BrowserManager(mode="launch") as bm:
         browser = bm.get_browser()
         
         # 获取所有工具（浏览器 + 表格抓取）
@@ -51,18 +52,25 @@ CAPABILITIES:
 2. Identify table structures
 3. Extract data from single or paginated tables
 4. Save data to CSV or JSON files
+5. Handle special page structures (GitHub Trending, etc.)
 
 WORKFLOW:
 1. Navigate to the target URL
-2. Use 'analyze_table' to understand the table structure
-3. Choose the appropriate scraping method:
-   - Single page: use 'extract_table'
-   - Button pagination: use 'scrape_paginated_table'
-   - URL pagination: use 'scrape_table_url_pagination'
+2. Identify the page type:
+   - GitHub Trending → use 'scrape_github_trending' tool
+   - Standard HTML table → use table extraction tools
+   - Custom structure → analyze first
+3. For standard tables:
+   - Use 'analyze_table' to understand the structure
+   - Choose appropriate scraping method:
+     * Single page: use 'extract_table'
+     * Button pagination: use 'scrape_paginated_table'
+     * URL pagination: use 'scrape_table_url_pagination'
 4. Save the results with a descriptive filename
 
 IMPORTANT TIPS:
-- Always analyze the table structure first
+- GitHub Trending is NOT a standard table, use the dedicated tool
+- Always analyze the table structure first for unknown pages
 - Look for pagination elements (buttons, page numbers, URLs)
 - Use appropriate CSS selectors for tables
 - Handle errors gracefully
@@ -70,7 +78,8 @@ IMPORTANT TIPS:
         
         agent = create_custom_agent(
             tools=all_tools,
-            system_prompt=system_prompt
+            system_prompt=system_prompt,
+            model=os.getenv("AGENT_MODEL") or "qwen3-max",
         )
         
         # 执行任务

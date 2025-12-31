@@ -7,3 +7,4 @@ results.json
 .env
 log.json
 *.png
+.DS_Store
