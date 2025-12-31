@@ -8,14 +8,10 @@ import asyncio
 import argparse
 from pathlib import Path
 
-# 添加 src 到 Python 路径
-sys.path.insert(0, str(Path(__file__).parent / "src"))
-
 from dotenv import load_dotenv
-from browser import BrowserManager
-from custom_agent.agent_config import create_custom_agent
-from puppeteer.puppeteer_tools import get_browser_tools
-from custom_agent.agent_tools import add
+from lib.browser import BrowserManager
+from lib.custom_agent import create_custom_agent, add
+from lib.puppeteer import get_browser_tools
 
 load_dotenv()
 

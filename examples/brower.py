@@ -2,14 +2,17 @@
 使用示例 - 展示不同的浏览器 Agent 用法
 """
 import os
+import sys
+from pathlib import Path
 import asyncio
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
-from browser import BrowserManager
-from custom_agent.agent_config import create_custom_agent
-from puppeteer.puppeteer_tools import get_browser_tools
-from custom_agent.agent_tools import add
+# 添加 lib 到 Python 路径
+sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
+from lib.browser import BrowserManager
+from lib.custom_agent import create_custom_agent, add
+from lib.puppeteer import get_browser_tools
 
 load_dotenv()
 cdp_url = os.getenv("CDP_URL")

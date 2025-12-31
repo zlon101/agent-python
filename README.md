@@ -14,7 +14,7 @@
 
 ```
 openai/
-├── src/
+├── lib/
 │   ├── main.py                 # 主入口
 │   ├── agent_config.py         # Agent 配置
 │   ├── agent_tools.py          # 自定义工具
@@ -83,7 +83,7 @@ python run.py --mode connect --task "Get page info"
 python run.py --interactive
 
 # 4. 运行示例
-python src/examples.py
+python lib/examples.py
 ```
 
 #### 方式 1: 启动新浏览器
@@ -93,7 +93,7 @@ python src/examples.py
 export BROWSER_MODE=launch
 
 # 运行
-python src/main.py
+python lib/main.py
 ```
 
 #### 方式 2: 连接已有 Chrome
@@ -106,7 +106,7 @@ chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrome-debug"
 export BROWSER_MODE=connect
 
 # 3. 运行
-python src/main.py
+python lib/main.py
 ```
 
 ## 📚 核心模块说明
@@ -169,7 +169,7 @@ pages = await get_chrome_pages(cdp_url)
 
 ```bash
 export RUN_MODE=single
-python src/main.py
+python lib/main.py
 ```
 
 执行一个预定义任务后退出。
@@ -178,7 +178,7 @@ python src/main.py
 
 ```bash
 export RUN_MODE=interactive
-python src/main.py
+python lib/main.py
 ```
 
 持续接收用户输入，适合调试和实验。
@@ -188,7 +188,7 @@ python src/main.py
 查看 `examples.py` 了解更多用法：
 
 ```bash
-python src/examples.py
+python lib/examples.py
 ```
 
 包含示例：

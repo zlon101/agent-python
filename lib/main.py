@@ -12,9 +12,8 @@ from langchain_core.messages import HumanMessage, messages_to_dict
 
 # 导入自定义模块
 from browser import BrowserManager
-from custom_agent.agent_config import create_custom_agent
-from puppeteer.puppeteer_tools import get_browser_tools
-from custom_agent.agent_tools import add
+from custom_agent import create_custom_agent, add
+from puppeteer import get_browser_tools
 
 # 加载环境变量
 load_dotenv()
