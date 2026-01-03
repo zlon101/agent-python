@@ -9,6 +9,8 @@
 - 🔌 **灵活连接**: 支持启动新浏览器或连接现有 Chrome
 - 🧩 **模块化架构**: 清晰的代码组织，易于扩展和维护
 - 🔧 **可配置**: 通过环境变量或代码轻松配置
+- 📊 **表格抓取**: 自动识别和抓取分页表格数据
+- 🎨 **通用抓取器**: 支持自定义字段、分页、延迟配置的通用数据采集工具
 
 ## 📁 项目结构
 
@@ -23,7 +25,12 @@ openai/
 ├── github_trending.json        # GitHub 趋势数据
 ├── examples/                   # 示例代码
 │   ├── brower.py               # 浏览器示例
-│   └── table_scraper.py        # 表格抓取示例
+│   ├── table_scraper.py        # 表格抓取示例
+│   └── universal_scraper_agent.py # 通用抓取器Agent示例
+├── docs/                       # 文档
+│   ├── github_trending_fix.md  # GitHub Trending修复说明
+│   ├── universal_scraper_guide.md # 通用抓取器详细指南
+│   └── universal_scraper_readme.md # 通用抓取器快速开始
 ├── lib/                        # 核心库
 │   ├── main.py                 # 主入口
 │   ├── browser/                # 浏览器管理模块
@@ -37,11 +44,16 @@ openai/
 │   └── puppeteer/              # Puppeteer 工具模块
 │       ├── __init__.py
 │       ├── puppeteer_tools.py  # Playwright 工具包装
-│       └── table_scraper/      # 表格抓取模块
+│       ├── table_scraper/      # 表格抓取模块
+│       │   ├── __init__.py
+│       │   ├── table_scraper.py # 表格抓取实现
+│       │   ├── table_tools.py   # 表格工具
+│       │   └── example.py       # 表格抓取示例
+│       └── universal_scraper/  # 通用数据抓取模块（新增）
 │           ├── __init__.py
-│           ├── table_scraper.py # 表格抓取实现
-│           ├── table_tools.py   # 表格工具
-│           └── example.py       # 表格抓取示例
+│           ├── scraper.py       # 通用抓取核心
+│           ├── tools.py         # LangChain工具集成
+│           └── example.py       # 完整示例
 ├── scripts/                    # 脚本文件
 │   ├── brower.py               # 浏览器脚本
 │   └── scrape_table.py         # 表格抓取脚本
@@ -203,10 +215,12 @@ python lib/main.py
 
 ## 💡 使用示例
 
-查看 `examples.py` 了解更多用法：
+### 浏览器控制示例
+
+查看 `examples/brower.py` 了解更多用法：
 
 ```bash
-python lib/examples.py
+python examples/brower.py
 ```
 
 包含示例：
@@ -217,6 +231,54 @@ python lib/examples.py
 5. 获取浏览器信息
 6. 错误处理
 7. 使用自定义工具
+
+### 通用数据抓取示例（新增⭐）
+
+**快速测试**：
+```bash
+python test_universal_scraper.py
+```
+
+**完整示例**：
+```bash
+python lib/puppeteer/universal_scraper/example.py
+```
+
+**Agent集成**：
+```bash
+python examples/universal_scraper_agent.py
+```
+
+**示例：抓取SegmentFault文章列表**
+```python
+from browser import BrowserManager
+from puppeteer import UniversalScraper, create_scraper_config
+
+async def main():
+    async with BrowserManager(mode="launch") as bm:
+        page = await bm.get_or_create_page()
+        
+        config = create_scraper_config(
+            url="https://segmentfault.com/",
+            fields={
+                "标题": "h3 a.text-body",
+                "投票数量": ".num-card .font-size-16",
+                "阅读数量": ".num-card.text-secondary .font-size-16"
+            },
+            container_selector=".list-group-item",
+            next_button_selector="a.page-link[rel='next']",
+            delay=5.0,
+            max_pages=2
+        )
+        
+        scraper = UniversalScraper(page, config)
+        data = await scraper.scrape()
+        scraper.save_to_json("output.json")
+```
+
+**详细文档**：
+- 快速开始: `docs/universal_scraper_readme.md`
+- 完整指南: `docs/universal_scraper_guide.md`
 
 ## 🔧 高级配置
 
@@ -287,6 +349,39 @@ async with BrowserManager(
 ### Q: 如何保留登录状态？
 
 **A:** 使用 `connect` 模式连接到你正常使用的 Chrome（需要先关闭所有 Chrome 窗口）。
+
+## 🆕 最新功能
+
+### 通用网页数据抓取器
+
+支持自定义字段、灵活分页、延迟配置的通用数据采集工具。
+
+**核心功能**：
+- ✅ 自定义字段和CSS选择器
+- ✅ 支持多种分页方式（按钮/URL参数）
+- ✅ 页码范围控制
+- ✅ 可配置延迟时间
+- ✅ 提取元素属性（href、src等）
+- ✅ 标准JSON格式输出
+- ✅ 与LangChain Agent无缝集成
+
+**快速开始**：
+```bash
+# 测试基础功能
+python test_universal_scraper.py
+
+# 查看完整示例
+python lib/puppeteer/universal_scraper/example.py
+
+# Agent集成
+python examples/universal_scraper_agent.py
+```
+
+**文档**：
+- 📖 详细指南: `docs/universal_scraper_guide.md`
+- 🚀 快速开始: `docs/universal_scraper_readme.md`
+
+---
 
 ## 📄 许可证
 
