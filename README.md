@@ -76,6 +76,8 @@ source .venv/bin/activate  # macOS/Linux
 
 # 安装依赖
 pip install -r requirements.txt
+# 临时使用清华源安装
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # 安装 Playwright 浏览器
 playwright install chromium

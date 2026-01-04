@@ -10,7 +10,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
-sys.path.insert(0, str(Path(__file__).parent / "lib"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
 from browser import BrowserManager
 from custom_agent import create_custom_agent
 from puppeteer import get_browser_tools, get_universal_scraping_tools
@@ -89,13 +89,14 @@ User: "抓取 SegmentFault 首页文章，包括标题和投票数"
 Agent思路:
 1. URL: https://segmentfault.com/
 2. 字段配置: {"标题": "h3 a.text-body", "投票数": ".num-card .font-size-16"}
-3. 容器选择器: .list-group-item
+3. 容器选择器: .list-card-bg .list-group.list-group-flush .list-group-item
 4. 调用 scrape_web_data 工具
 """
         
         agent = create_custom_agent(
             tools=all_tools,
             system_prompt=system_prompt,
+            api_key=os.getenv("ALIBABA_API_KEY", ""),
             model=os.getenv("AGENT_MODEL", "qwen-plus")
         )
         
@@ -125,33 +126,18 @@ TASKS = {
         "task": """
 抓取 SegmentFault 首页文章列表数据：
 - URL: https://segmentfault.com/
-- 容器选择器: .list-group-item
+- 容器选择器: .list-card-bg .list-group.list-group-flush .list-group-item
 - 需要提取的字段：
   * 标题: h3 a.text-body
   * 投票数量: .num-card .font-size-16
-  * 阅读数量: .num-card.text-secondary .font-size-16
-- 下一页按钮: a.page-link[rel='next']
-- 抓取2页，每页停留5秒
+  * 阅读数量: .reads1 .font-size-16
+- 下一页按钮: .bg-white .page-item:last-child .page-link
+- 抓取2页，每页停留4秒
 - 保存为 segmentfault_result.json
 """
     },
     
     "2": {
-        "name": "GitHub Trending",
-        "task": """
-抓取 GitHub Trending 页面：
-- URL: https://github.com/trending
-- 容器选择器: article.Box-row
-- 提取字段：
-  * 项目名: h2 a
-  * 描述: p.col-9
-  * 语言: span[itemprop='programmingLanguage']
-- 单页抓取，停留3秒
-- 保存为 github_trending_universal.json
-"""
-    },
-    
-    "3": {
         "name": "Hacker News",
         "task": """
 抓取 Hacker News 首页：
@@ -165,12 +151,12 @@ TASKS = {
 """
     },
     
-    "4": {
+    "3": {
         "name": "预览测试",
         "task": """
 预览 SegmentFault 首页的抓取结果：
 - URL: https://segmentfault.com/
-- 容器选择器: .list-group-item
+- 容器选择器: .list-card-bg .list-group.list-group-flush .list-group-item
 - 字段: {"标题": "h3 a.text-body"}
 - 使用 preview_scrape 工具，只看前3条
 """

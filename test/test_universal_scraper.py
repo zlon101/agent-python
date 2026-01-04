@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-sys.path.insert(0, str(Path(__file__).parent / "lib"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
 from browser import BrowserManager
 from puppeteer import UniversalScraper, create_scraper_config
 
@@ -79,10 +79,12 @@ async def test_pagination():
         config = create_scraper_config(
             url="https://segmentfault.com/",
             fields={
-                "标题": "h3 a.text-body"
+                "标题": "h3 a.text-body",
+                "投票数": ".num-card .font-size-16",
+                "阅读数": ".reads1 .font-size-16"
             },
-            container_selector=".list-group-item",
-            next_button_selector="a.page-link[rel='next']",
+            container_selector=".list-card-bg .list-group.list-group-flush .list-group-item",
+            next_button_selector=".bg-white .page-item:last-child .page-link",
             delay=4.0,
             max_pages=2
         )
