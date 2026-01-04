@@ -23,7 +23,7 @@ async def test_basic_scraping():
     print("="*60 + "\n")
     
     async with BrowserManager(mode="connect", cdp_url=cdp_url, headless=False) as bm:
-        page = await bm.get_or_create_page()
+        page = await bm.get_or_create_page(target_url="https://segmentfault.com/")
         
         # 测试配置
         config = create_scraper_config(
@@ -73,8 +73,8 @@ async def test_pagination():
     print("🧪 测试通用抓取器 - 分页功能")
     print("="*60 + "\n")
     
-    async with BrowserManager(mode="launch", headless=False) as bm:
-        page = await bm.get_or_create_page()
+    async with BrowserManager(mode="connect", headless=False) as bm:
+        page = await bm.get_or_create_page(target_url="https://segmentfault.com/")
         
         config = create_scraper_config(
             url="https://segmentfault.com/",

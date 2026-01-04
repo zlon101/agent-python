@@ -7,6 +7,7 @@
 - 🎯 **智能代理**: 基于 LLM 的自主决策和任务执行
 - 🌐 **浏览器控制**: 完整的网页导航、点击、提取和截图能力
 - 🔌 **灵活连接**: 支持启动新浏览器或连接现有 Chrome
+- 🎯 **标签页查找**: 连接到指定 URL 的已打开标签页，直接操作
 - 🧩 **模块化架构**: 清晰的代码组织，易于扩展和维护
 - 🔧 **可配置**: 通过环境变量或代码轻松配置
 - 📊 **表格抓取**: 自动识别和抓取分页表格数据
@@ -353,6 +354,43 @@ async with BrowserManager(
 **A:** 使用 `connect` 模式连接到你正常使用的 Chrome（需要先关闭所有 Chrome 窗口）。
 
 ## 🆕 最新功能
+
+### 🎯 标签页查找与连接（新增⭐）
+
+连接到已打开的指定 URL 标签页，直接在上面操作，无需重新加载。
+
+**核心功能**：
+- ✅ 查找已打开的标签页（支持部分/精确匹配）
+- ✅ 列出所有打开的页面信息
+- ✅ 直接在已打开的页面上抓取数据
+- ✅ 保留登录状态和浏览历史
+
+**快速开始**：
+```python
+from browser import BrowserManager
+
+# 连接到已打开的 SegmentFault 页面
+async with BrowserManager(mode="connect") as bm:
+    # 查找并连接到指定 URL 的标签页
+    page = await bm.get_or_create_page(target_url="segmentfault.com")
+    
+    # 直接在这个页面上操作，无需导航
+    print(await page.title())
+```
+
+**测试示例**：
+```bash
+# 测试新功能
+python test_browser_manager.py
+
+# 实战示例
+python examples/existing_tab_scraper.py
+```
+
+**文档**：
+- 📖 完整指南: `docs/browser_manager_new_features.md`
+
+---
 
 ### 通用网页数据抓取器
 

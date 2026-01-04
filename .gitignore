@@ -8,3 +8,4 @@ results.json
 log.json
 *.png
 .DS_Store
+test_*.json

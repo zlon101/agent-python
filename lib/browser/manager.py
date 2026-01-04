@@ -3,6 +3,8 @@
 负责浏览器的启动、连接和生命周期管理
 """
 
+import os
+from dotenv import load_dotenv
 from typing import Optional, Literal, TYPE_CHECKING
 from playwright.async_api import Browser, BrowserContext, Page, async_playwright
 
@@ -11,6 +13,7 @@ if TYPE_CHECKING:
 
 from .detector import find_chrome_cdp_url
 
+load_dotenv()
 
 class BrowserManager:
     """浏览器管理器"""
@@ -35,7 +38,7 @@ class BrowserManager:
         """
         self.mode = mode
         self.headless = headless
-        self.cdp_url = cdp_url
+        self.cdp_url = cdp_url = os.getenv("CDP_URL") or cdp_url
         self.cdp_ports = cdp_ports
         
         self.browser: Optional[Browser] = None
@@ -104,15 +107,30 @@ class BrowserManager:
                 f"Failed to connect to Chrome at {self.cdp_url}: {str(e)}"
             )
     
-    async def get_or_create_page(self) -> Page:
+    async def get_or_create_page(self, target_url: Optional[str] = None) -> Page:
         """
         获取当前页面或创建新页面
+        
+        Args:
+            target_url: 目标URL（可选）
+                - 如果提供，会查找匹配此URL的已打开标签页
+                - 支持部分匹配（URL包含关系）
+                - 如果找不到，按原逻辑返回或创建页面
         
         Returns:
             Page: Playwright 页面对象
         """
         if not self.browser:
             raise RuntimeError("Browser not started. Call start() first.")
+        
+        # 如果指定了目标URL，尝试查找对应的标签页
+        if target_url:
+            page = await self.find_page_by_url(target_url)
+            if page:
+                print(f"✅ Found existing tab: {target_url}")
+                return page
+            else:
+                print(f"⚠️ No tab found for: {target_url}")
         
         # 获取所有上下文
         contexts = self.browser.contexts
@@ -136,6 +154,81 @@ class BrowserManager:
         
         # 返回最后一个活跃页面
         return pages[-1]
+    
+    async def find_page_by_url(
+        self, 
+        target_url: str, 
+        exact_match: bool = False
+    ) -> Optional[Page]:
+        """
+        在所有打开的标签页中查找匹配指定URL的页面
+        
+        Args:
+            target_url: 目标URL
+            exact_match: 是否精确匹配
+                - False（默认）: 部分匹配（页面URL包含target_url）
+                - True: 精确匹配（页面URL完全等于target_url）
+        
+        Returns:
+            Page: 找到的页面对象，如果没找到返回None
+        """
+        if not self.browser:
+            return None
+        
+        # 规范化目标URL
+        target_url_normalized = target_url.lower().strip()
+        
+        # 遍历所有上下文和页面
+        for context in self.browser.contexts:
+            for page in context.pages:
+                try:
+                    page_url = page.url.lower()
+                    
+                    # 匹配逻辑
+                    if exact_match:
+                        if page_url == target_url_normalized:
+                            return page
+                    else:
+                        if target_url_normalized in page_url:
+                            return page
+                except Exception as e:
+                    # 页面可能已关闭或无法访问
+                    continue
+        
+        return None
+    
+    async def list_all_pages(self) -> list[dict]:
+        """
+        列出所有打开的页面信息
+        
+        Returns:
+            包含所有页面信息的列表
+        """
+        if not self.browser:
+            return []
+        
+        pages_info = []
+        
+        for ctx_idx, context in enumerate(self.browser.contexts):
+            for page_idx, page in enumerate(context.pages):
+                try:
+                    pages_info.append({
+                        "context_index": ctx_idx,
+                        "page_index": page_idx,
+                        "url": page.url,
+                        "title": await page.title(),
+                        "is_closed": page.is_closed()
+                    })
+                except Exception as e:
+                    pages_info.append({
+                        "context_index": ctx_idx,
+                        "page_index": page_idx,
+                        "url": "[Error]",
+                        "title": str(e),
+                        "is_closed": True
+                    })
+        
+        return pages_info
     
     async def get_context(self) -> BrowserContext:
         """获取浏览器上下文"""

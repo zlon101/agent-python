@@ -1,39 +1,39 @@
-# task
+# Task
+success ! 当前项目基础上新增功能，根据用户指定的步骤，操作浏览器。操作的类型有：打开某个url、点击按钮、选择select、输入框搜索、抓取页面数据
 
-在当前项目功能上，实现一个统计网页数据的通用功能，入参有网址、需要解析的dom内容、页码范围（可选）、下一页按钮选择器（可选）、切换页面的延迟时间，返回json格式的数据内容
-
-# RULE
-
-1. 用户指定一个网页的url，指定需要抓取的内容的css选择器，如果数据有分页，还会指定下一页按钮的css选择器
-2. 根据用户提供的信息，解析页面dom结构，获取用户指定的信息，并且已json格式保存到本地文件
-3. 可以配置点击下一页的延迟时间，需要采集的页数
-
-# example
+# Example
 
 ## input
-打开 https://segmentfault.com/ 页面，获取 `.list-group.list-group-flush` 对应的列表数据，
-采集的信息和对应的选择器如下：
-"""
-标题：h3 a.text-body
-投票数量：.num-card .font-size-16
-阅读数量：.num-card.text-secondary .font-size-16
-"""
-
-下一页按钮选择器是 `a.page-link`，页面至少停留5秒，
+按照以下步骤操作浏览器：
+1. 打开 https://segmentfault.com/
+2. 在 `#react-aria-3 input.form-control` 中输入 "langchain" 并回车
+3. 点击 `a[data-rr-ui-event-key='search?q=langchain&type=article']`
+5. 提取页面中的数据
+  - 容器选择器：.row div.list-group li
+  - 需要提取的字段：
+    * 标题: h5
+    * 时间: .mb-0.font-size-14
+  - 下一页按钮: .d-none .page-item:last-child .page-link
+  - 抓取2页，每页停留3秒
+  - 保存为 segmentfault_result.json
 
 
 ## output
 ```json
 [
   {
-    "标题": "xxx",
-    "投票数量": 3,
-    "阅读数量": 10
+    "标题": "adgsdf",
+    "时间": "2025-11-07",
   },
   {
-    "标题": "yyy",
-    "投票数量": 5,
-    "阅读数量": 20
-  }
+    "标题": "asdg4",
+    "时间": "2025-11-09",
+  },
 ]
 ```
+
+
+=================
+
+# Task
+更新 /Users/admins/work/openai/lib/browser/manager.py 中的 get_or_create_page，让用户可以连接到当前打开的浏览器，查找用户指定的url对应的标签页，在这个标签页上进行操作

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PORT=9422
-PROFILE_DIR="/Users/admin/Downloads/chrome-user-tmp"
+PROFILE_DIR="/Users/admins/Downloads/chrome-user-tmp"
 
 echo "Starting Chrome with Remote Debugging..."
 echo ""
