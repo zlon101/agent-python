@@ -6,7 +6,7 @@ import asyncio
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent / "lib"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
 from browser import BrowserManager
 
 
@@ -99,6 +99,8 @@ async def test_get_page_with_url():
         print(f"标题: {await page.title()}\n")
 
 
+
+# 连接到已经打开的页面，解析页面数据
 async def test_with_scraper():
     """测试在抓取器中使用新功能"""
     print("\n" + "="*60)

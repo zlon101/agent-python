@@ -13,6 +13,18 @@ from .universal_scraper import (
     create_scraper_config,
     get_universal_scraping_tools
 )
+from .browser_steps import (
+    BrowserStepExecutor,
+    StepConfig,
+    StepType,
+    create_navigate_step,
+    create_click_step,
+    create_input_step,
+    create_select_step,
+    create_extract_step,
+    create_press_key_step,
+    create_wait_step
+)
 
 __all__ = [
     'get_browser_tools',
@@ -25,4 +37,14 @@ __all__ = [
     'ScraperConfig',
     'FieldConfig',
     'create_scraper_config',
+    'BrowserStepExecutor',
+    'StepConfig',
+    'StepType',
+    'create_navigate_step',
+    'create_click_step',
+    'create_input_step',
+    'create_select_step',
+    'create_extract_step',
+    'create_press_key_step',
+    'create_wait_step',
 ]
