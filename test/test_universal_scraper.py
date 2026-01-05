@@ -67,8 +67,8 @@ async def test_basic_scraping():
         print("="*60 + "\n")
 
 
+"""测试分页功能"""
 async def test_pagination():
-    """测试分页功能"""
     print("\n" + "="*60)
     print("🧪 测试通用抓取器 - 分页功能")
     print("="*60 + "\n")

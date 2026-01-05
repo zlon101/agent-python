@@ -119,10 +119,12 @@ async def test_with_scraper():
         config = create_scraper_config(
             url=page.url,  # 使用当前页面的 URL
             fields={
-                "标题": "h3 a.text-body",
-                "投票数": ".num-card .font-size-16"
+                # "标题": "h3 a.text-body",
+                # "投票数": ".num-card .font-size-16"
+                "标题": "h5",
+                "时间": ".mb-0.font-size-14"
             },
-            container_selector=".list-group-item",
+            container_selector=".row div.list-group li",
             delay=2.0
         )
         
@@ -131,6 +133,10 @@ async def test_with_scraper():
         # 不需要导航，直接抓取当前页面
         print("🔍 抓取当前页面数据...")
         data = await scraper.scrape_current_page()
+        if data:
+            fileName = scraper.save_to_json("test_解析已经打开的页面.json")
+            print(f"\n✅ 数据已保存到 {fileName}")
+        
         
         print(f"\n✅ 成功抓取 {len(data)} 条数据")
         print(f"\n📊 前3条数据:")
@@ -138,8 +144,8 @@ async def test_with_scraper():
             print(f"\n{i}. {item}")
 
 
+"""交互式页面查找器"""
 async def interactive_page_finder():
-    """交互式页面查找器"""
     print("\n" + "="*60)
     print("🔍 交互式页面查找器")
     print("="*60 + "\n")
