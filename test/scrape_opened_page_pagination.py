@@ -40,6 +40,7 @@ async def scrape_opened_page_with_pagination():
         
         # 连接到已打开的 SegmentFault 页面
         print("🔍 查找 SegmentFault 页面...\n")
+        # https://devops.aliyun.com/projex/workitem#viewIdentifier=441e17ad4f72718076eedcf5
         page = await bm.get_or_create_page(target_url="devops.aliyun.com")
         
         if not page:
@@ -49,12 +50,32 @@ async def scrape_opened_page_with_pagination():
         print(f"✅ 连接到页面: {page.url}")
         print(f"   标题: {await page.title()}\n")
         
-        # 配置抓取器（支持分页）
+        # 云效任务配置
+        # config = create_scraper_config(
+        #     url=page.url,  # 使用当前页面的 URL
+        #     fields={
+        #         "标题": ".yunxiao-projex-workitem-title",
+        #         "人天": ".TextAndNumberModifier--statusName--yXxCXqU",
+        #         "项目": ".newTable--spaceItemsWrapper--gRll8b3 .newTable--itemButton--nbzOwGl",
+        #         "开始时间": ".newTable--dateTimeCell--j9OiSqh > span",
+        #         "完成时间": "td[data-next-table-col='7'] .teamix-title span",
+        #     },
+        #     container_selector=".next-table-body tr.next-table-row",
+        #     next_button_selector=".next-btn.next-pagination-item.next-next",  # 下一页按钮
+        #     delay=4.0,  # 每页等待3秒
+        #     max_pages=2  # 抓取2页
+        # )
+        
+        # 云效缺陷配置
         config = create_scraper_config(
-            url=page.url,  # 使用当前页面的 URL
+            url=page.url,
             fields={
                 "标题": ".yunxiao-projex-workitem-title",
-                "人天": ".TextAndNumberModifier--statusName--yXxCXqU"
+                "人天": ".TextAndNumberModifier--statusName--yXxCXqU",
+                "项目": ".newTable--spaceItemsWrapper--gRll8b3 .newTable--itemButton--nbzOwGl",
+                # "开始时间": ".newTable--dateTimeCell--j9OiSqh > span",
+                "完成时间": "td[data-next-table-col='7'] .teamix-title span",
+                "bug产生原因": "td[data-next-table-col='9'] em",
             },
             container_selector=".next-table-body tr.next-table-row",
             next_button_selector=".next-btn.next-pagination-item.next-next",  # 下一页按钮
@@ -72,7 +93,7 @@ async def scrape_opened_page_with_pagination():
         
         # 保存数据
         if data:
-            scraper.save_to_json("test_云效任务类型人天统计.json")
+            scraper.save_to_json("test_云效缺陷统计.json")
             print(f"\n✅ 成功!")
             print(f"   总条数: {len(data)}")
         else:
