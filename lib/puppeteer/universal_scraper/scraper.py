@@ -218,6 +218,30 @@ class UniversalScraper:
             self.all_data = data
             return data
     
+    async def scrape_from_current_page(self, skip_navigation: bool = True) -> List[Dict[str, Any]]:
+        """
+        从当前页面开始抓取（不导航）
+        适用于已经打开的页面
+        
+        Args:
+            skip_navigation: 是否跳过导航，默认True
+        
+        Returns:
+            抓取的所有数据
+        """
+        print(f"📍 从当前页面开始抓取: {self.page.url}")
+        
+        # 等待页面稳定
+        await asyncio.sleep(self.config.delay)
+        
+        # 判断是否需要分页
+        if self.config.next_button_selector or self.config.page_range:
+            return await self.scrape_with_pagination()
+        else:
+            data = await self.scrape_current_page()
+            self.all_data = data
+            return data
+    
     def save_to_json(self, filename: str = "scraped_data.json") -> str:
         """
         保存数据到JSON文件

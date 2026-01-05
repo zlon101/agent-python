@@ -132,10 +132,8 @@ async def test_with_scraper():
         
         # 不需要导航，直接抓取当前页面
         print("🔍 抓取当前页面数据...")
-        data = await scraper.scrape_current_page()
-        if data:
-            fileName = scraper.save_to_json("test_解析已经打开的页面.json")
-            print(f"\n✅ 数据已保存到 {fileName}")
+        data = await scraper.scrape_from_current_page()
+        scraper.save_to_json("test_解析已经打开的页面.json")
         
         
         print(f"\n✅ 成功抓取 {len(data)} 条数据")
