@@ -18,21 +18,17 @@
 
 ```
 openai/
-├── .env                        # 环境变量配置
 ├── .env.example                # 环境变量示例
 ├── .gitignore                  # Git 忽略配置
 ├── README.md                   # 本文件
 ├── requirements.txt            # 依赖包
-├── debug.py                    # 调试脚本
-├── github_trending.json        # GitHub 趋势数据
+├── TODO.md                     # TODO
 ├── examples/                   # 示例代码
 │   ├── brower.py               # 浏览器示例
+│   ├── browser_step_executor.py  # 浏览器步骤执行器示例
+│   ├── existing_tab_scraper.py # 现有标签页抓取器示例
 │   ├── table_scraper.py        # 表格抓取示例
 │   └── universal_scraper_agent.py # 通用抓取器Agent示例
-├── docs/                       # 文档
-│   ├── github_trending_fix.md  # GitHub Trending修复说明
-│   ├── universal_scraper_guide.md # 通用抓取器详细指南
-│   └── universal_scraper_readme.md # 通用抓取器快速开始
 ├── lib/                        # 核心库
 │   ├── main.py                 # 主入口
 │   ├── browser/                # 浏览器管理模块
@@ -43,24 +39,41 @@ openai/
 │   │   ├── __init__.py
 │   │   ├── agent_config.py     # Agent 配置
 │   │   └── agent_tools.py      # 自定义工具
-│   └── puppeteer/              # Puppeteer 工具模块
+│   ├── puppeteer/              # Puppeteer 工具模块
+│   │   ├── __init__.py
+│   │   ├── puppeteer_tools.py  # Playwright 工具包装
+│   │   ├── README.md           # Puppeteer README
+│   │   ├── browser_steps/      # 浏览器步骤模块
+│   │   │   ├── __init__.py
+│   │   │   └── step_executor.py # 步骤执行器
+│   │   ├── table_scraper/      # 表格抓取模块
+│   │   │   ├── __init__.py
+│   │   │   ├── table_scraper.py # 表格抓取实现
+│   │   │   ├── table_tools.py   # 表格工具
+│   │   │   └── example.py       # 表格抓取示例
+│   │   └── universal_scraper/  # 通用数据抓取模块
+│   │       ├── __init__.py
+│   │       ├── scraper.py       # 通用抓取核心
+│   │       ├── tools.py         # LangChain工具集成
+│   │       └── example.py       # 完整示例
+│   └── visualization/          # 任务可视化模块
 │       ├── __init__.py
-│       ├── puppeteer_tools.py  # Playwright 工具包装
-│       ├── table_scraper/      # 表格抓取模块
-│       │   ├── __init__.py
-│       │   ├── table_scraper.py # 表格抓取实现
-│       │   ├── table_tools.py   # 表格工具
-│       │   └── example.py       # 表格抓取示例
-│       └── universal_scraper/  # 通用数据抓取模块（新增）
-│           ├── __init__.py
-│           ├── scraper.py       # 通用抓取核心
-│           ├── tools.py         # LangChain工具集成
-│           └── example.py       # 完整示例
+│       ├── ARCHITECTURE.md     # 架构文档
+│       ├── config.py           # 配置
+│       ├── examples.py         # 示例
+│       └── visualizer.py       # 可视化工具
 ├── scripts/                    # 脚本文件
 │   ├── brower.py               # 浏览器脚本
 │   └── scrape_table.py         # 表格抓取脚本
-└── shell/                      # Shell 脚本
-    └── run_chrome.sh           # Chrome 启动脚本
+├── shell/                      # Shell 脚本
+│   └── run_chrome.sh           # Chrome 启动脚本
+└── test/                       # 测试文件
+    ├── scrape_opened_page_pagination.py # 打开页面分页抓取测试
+    ├── task_visualization.py   # 任务可视化测试
+    ├── test_step_executor_segment.py # 步骤执行器分段测试
+    ├── test_step_executor.py   # 步骤执行器测试
+    ├── test_universal_scraper_opened.py # 打开页面通用抓取器测试
+    └── test_universal_scraper.py # 通用抓取器测试
 ```
 
 ## 🚀 快速开始

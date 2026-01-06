@@ -15,15 +15,21 @@ matplotlib.rcParams['axes.unicode_minus'] = False
 
 
 class Visualizer:
-    """通用可视化工具类"""
+    """
+    通用可视化工具类
+    
+    该类封装了多种常见的图表生成方法，例如柱状图、折线图、饼图等。
+    它使用 Matplotlib 库进行绘图，并提供了灵活的配置选项。
+    """
     
     def __init__(self, output_dir, config=None):
         """
         初始化可视化工具
         
         Args:
-            output_dir: 输出目录路径
-            config: 配置字典
+            output_dir (str): 图表输出目录的路径。
+            config (dict, optional): 自定义配置字典，如果未提供，则使用默认配置。 
+                                     Defaults to None.
         """
         self.output_dir = output_dir
         self.config = config or CHART_CONFIG
@@ -32,18 +38,21 @@ class Visualizer:
     def bar_chart(self, data, title, xlabel, ylabel, filename, 
                   figsize=None, color=None, show_values=True, sort=False):
         """
-        生成柱状图
+        生成并保存一个柱状图。
         
         Args:
-            data: 字典 {标签: 值} 或 列表 [(标签, 值), ...]
-            title: 图表标题
-            xlabel: X轴标签
-            ylabel: Y轴标签
-            filename: 保存文件名
-            figsize: 图表尺寸
-            color: 柱子颜色
-            show_values: 是否显示数值标签
-            sort: 是否按值排序
+            data (dict or list): 图表数据，可以是 {标签: 值} 的字典或 [(标签, 值)] 的列表。
+            title (str): 图表标题。
+            xlabel (str): X轴标签。
+            ylabel (str): Y轴标签。
+            filename (str): 保存图表的文件名。
+            figsize (tuple, optional): 图表尺寸。 Defaults to None.
+            color (str, optional): 柱子颜色。 Defaults to None.
+            show_values (bool, optional): 是否在柱子上方显示数值。 Defaults to True.
+            sort (bool, optional): 是否按值对数据进行排序。 Defaults to False.
+            
+        Returns:
+            str: 生成图表的文件路径。
         """
         # 数据处理
         if isinstance(data, dict):
@@ -87,18 +96,21 @@ class Visualizer:
     def line_chart(self, data, title, xlabel, ylabel, filename,
                    figsize=None, color=None, fill=True, show_values=True):
         """
-        生成折线图
+        生成并保存一个折线图。
         
         Args:
-            data: 字典 {标签: 值} 或 列表 [(标签, 值), ...]
-            title: 图表标题
-            xlabel: X轴标签
-            ylabel: Y轴标签
-            filename: 保存文件名
-            figsize: 图表尺寸
-            color: 线条颜色
-            fill: 是否填充区域
-            show_values: 是否显示数值标签
+            data (dict or list): 图表数据。
+            title (str): 图表标题。
+            xlabel (str): X轴标签。
+            ylabel (str): Y轴标签。
+            filename (str): 保存图表的文件名。
+            figsize (tuple, optional): 图表尺寸。 Defaults to None.
+            color (str, optional): 线条颜色。 Defaults to None.
+            fill (bool, optional): 是否填充线下方的区域。 Defaults to True.
+            show_values (bool, optional): 是否在线条上显示数据点的值。 Defaults to True.
+            
+        Returns:
+            str: 生成图表的文件路径。
         """
         # 数据处理
         if isinstance(data, dict):
@@ -145,15 +157,18 @@ class Visualizer:
     def pie_chart(self, data, title, filename, figsize=None, 
                   colors=None, show_legend=True):
         """
-        生成饼图
+        生成并保存一个饼图。
         
         Args:
-            data: 字典 {标签: 值}
-            title: 图表标题
-            filename: 保存文件名
-            figsize: 图表尺寸
-            colors: 颜色列表
-            show_legend: 是否显示图例
+            data (dict): 图表数据，格式为 {标签: 值}。
+            title (str): 图表标题。
+            filename (str): 保存图表的文件名。
+            figsize (tuple, optional): 图表尺寸。 Defaults to None.
+            colors (list, optional): 颜色列表。 Defaults to None.
+            show_legend (bool, optional): 是否显示图例。 Defaults to True.
+            
+        Returns:
+            str: 生成图表的文件路径。
         """
         # 数据处理
         if isinstance(data, dict):
@@ -204,16 +219,19 @@ class Visualizer:
     def stacked_bar_chart(self, data, title, xlabel, ylabel, filename,
                          figsize=None, colors=None):
         """
-        生成堆积柱状图
+        生成并保存一个堆积柱状图。
         
         Args:
-            data: 字典 {主类别: {子类别: 值}}
-            title: 图表标题
-            xlabel: X轴标签
-            ylabel: Y轴标签
-            filename: 保存文件名
-            figsize: 图表尺寸
-            colors: 颜色列表
+            data (dict): 图表数据，格式为 {主类别: {子类别: 值}}。
+            title (str): 图表标题。
+            xlabel (str): X轴标签。
+            ylabel (str): Y轴标签。
+            filename (str): 保存图表的文件名。
+            figsize (tuple, optional): 图表尺寸。 Defaults to None.
+            colors (list, optional): 颜色列表。 Defaults to None.
+            
+        Returns:
+            str: 生成图表的文件路径。
         """
         # 准备数据
         categories = list(data.keys())
@@ -261,16 +279,19 @@ class Visualizer:
     def horizontal_bar_chart(self, data, title, xlabel, filename,
                             figsize=None, top_n=None, show_values=True):
         """
-        生成横向柱状图
+        生成并保存一个横向柱状图。
         
         Args:
-            data: 字典 {标签: 值}
-            title: 图表标题
-            xlabel: X轴标签
-            filename: 保存文件名
-            figsize: 图表尺寸
-            top_n: 只显示前N个
-            show_values: 是否显示数值标签
+            data (dict): 图表数据，格式为 {标签: 值}。
+            title (str): 图表标题。
+            xlabel (str): X轴标签。
+            filename (str): 保存图表的文件名。
+            figsize (tuple, optional): 图表尺寸。 Defaults to None.
+            top_n (int, optional): 只显示前N个。 Defaults to None.
+            show_values (bool, optional): 是否显示数值标签。 Defaults to True.
+            
+        Returns:
+            str: 生成图表的文件路径。
         """
         # 数据处理
         if isinstance(data, dict):
@@ -317,17 +338,20 @@ class Visualizer:
     def heatmap(self, data, row_labels, col_labels, title, filename,
                 figsize=None, cmap=None, show_values=True):
         """
-        生成热力图
+        生成并保存一个热力图。
         
         Args:
-            data: 二维数组或矩阵
-            row_labels: 行标签列表
-            col_labels: 列标签列表
-            title: 图表标题
-            filename: 保存文件名
-            figsize: 图表尺寸
-            cmap: 颜色映射
-            show_values: 是否显示数值
+            data (list or np.ndarray): 二维数组或矩阵。
+            row_labels (list): 行标签列表。
+            col_labels (list): 列标签列表。
+            title (str): 图表标题。
+            filename (str): 保存图表的文件名。
+            figsize (tuple, optional): 图表尺寸。 Defaults to None.
+            cmap (str or Colormap, optional): 颜色映射。 Defaults to None.
+            show_values (bool, optional): 是否在热力图单元格中显示数值。 Defaults to True.
+            
+        Returns:
+            str: 生成图表的文件路径。
         """
         # 配置
         figsize = figsize or self.config['figsize']['heatmap']
@@ -377,13 +401,17 @@ class Visualizer:
     
     def multi_chart_dashboard(self, charts_config, title, filename, figsize=None):
         """
-        生成多图表仪表盘
+        生成并保存一个多图表仪表盘。
         
         Args:
-            charts_config: 图表配置列表，每个元素为 (位置, 类型, 数据, 配置)
-            title: 总标题
-            filename: 保存文件名
-            figsize: 图表尺寸
+            charts_config (list): 图表配置列表，每个元素为 
+                                  (位置, 类型, 数据, 配置)。
+            title (str): 总标题。
+            filename (str): 保存文件名。
+            figsize (tuple, optional): 图表尺寸。 Defaults to None.
+            
+        Returns:
+            str: 生成图表的文件路径。
         """
         figsize = figsize or self.config['figsize']['dashboard']
         
@@ -413,7 +441,14 @@ class Visualizer:
         return filepath
     
     def _draw_bar_subplot(self, ax, data, config):
-        """绘制柱状图子图"""
+        """
+        在给定的 `Axes` 对象上绘制一个柱状图子图。
+
+        Args:
+            ax (matplotlib.axes.Axes): 用于绘图的 `Axes` 对象。
+            data (dict): 图表数据，格式为 {标签: 值}。
+            config (dict): 图表配置。
+        """
         labels = list(data.keys())
         values = list(data.values())
         ax.bar(range(len(labels)), values, color=config.get('color', '#3498DB'))
@@ -423,7 +458,14 @@ class Visualizer:
         ax.grid(axis='y', alpha=0.3)
     
     def _draw_pie_subplot(self, ax, data, config):
-        """绘制饼图子图"""
+        """
+        在给定的 `Axes` 对象上绘制一个饼图子图。
+
+        Args:
+            ax (matplotlib.axes.Axes): 用于绘图的 `Axes` 对象。
+            data (dict): 图表数据，格式为 {标签: 值}。
+            config (dict): 图表配置。
+        """
         labels = list(data.keys())
         sizes = list(data.values())
         colors = config.get('colors', self.config['colors']['primary'])
@@ -431,7 +473,14 @@ class Visualizer:
         ax.set_title(config.get('title', ''), fontweight='bold')
     
     def _draw_line_subplot(self, ax, data, config):
-        """绘制折线图子图"""
+        """
+        在给定的 `Axes` 对象上绘制一个折线图子图。
+
+        Args:
+            ax (matplotlib.axes.Axes): 用于绘图的 `Axes` 对象。
+            data (dict): 图表数据，格式为 {标签: 值}。
+            config (dict): 图表配置。
+        """
         labels = list(data.keys())
         values = list(data.values())
         color = config.get('color', '#E74C3C')
@@ -443,7 +492,14 @@ class Visualizer:
         ax.grid(True, alpha=0.3)
     
     def _draw_text_subplot(self, ax, text, config):
-        """绘制文本子图"""
+        """
+        在给定的 `Axes` 对象上绘制一个文本子图。
+
+        Args:
+            ax (matplotlib.axes.Axes): 用于绘图的 `Axes` 对象。
+            text (str): 要显示的文本。
+            config (dict): 文本配置。
+        """
         ax.axis('off')
         ax.text(0.1, 0.5, text, fontsize=config.get('fontsize', 11),
                verticalalignment='center', fontfamily='monospace',

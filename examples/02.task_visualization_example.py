@@ -9,13 +9,14 @@ import json
 from collections import defaultdict
 from datetime import datetime
 
+# 将 lib 目录添加到 Python 路径，以便导入 visualization 模块
 sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
 from visualization import Visualizer
 
-# 数据文件路径
+# 默认的数据文件路径
 DATA_FILE = '/Users/admins/work/openai/test_云效任务类型人天统计.json'
 
-# 任务类型映射
+# 任务类型映射，用于从任务标题中提取标准化的任务类型
 TASK_TYPE_MAPPING = {
     'A': "需求评审",
     'B': "技术方案",
@@ -27,41 +28,61 @@ TASK_TYPE_MAPPING = {
     'I': "跟测",
 }
 
-"""
-数据处理器
-负责从原始数据中提取和聚合可视化所需的数据
-"""
 class DataProcessor:
+    """
+    数据处理器
+    
+    该类负责从原始数据文件中提取、解析和聚合可视化所需的数据。
+    它封装了所有与数据相关的操作，例如加载数据、解析字段、
+    以及根据不同维度（如项目、月份、任务类型）对数据进行分组和统计。
+    """
     def __init__(self, data_file=None):
         """
-        初始化数据处理器
+        初始化数据处理器。
         
         Args:
-            data_file: 数据文件路径
+            data_file (str, optional): 数据文件的路径。如果未提供，则使用默认路径。
+                                       Defaults to None.
         """
         self.data_file = data_file or DATA_FILE
         self.raw_data = None
         self.load_data()
     
     def load_data(self):
-        """加载数据"""
+        """从 JSON 文件中加载原始数据。"""
         with open(self.data_file, 'r', encoding='utf-8') as f:
             self.raw_data = json.load(f)
         return self.raw_data
     
     @staticmethod
     def parse_workdays(workdays):
-        """解析人天数据"""
+        """
+        解析人天数据。
+        
+        Args:
+            workdays (str or float or None): 原始人天数据。
+            
+        Returns:
+            float: 解析后的人天数，如果无法解析则返回 0。
+        """
         if workdays is None or workdays == '':
             return 0
         try:
             return float(workdays)
-        except:
+        except (ValueError, TypeError):
             return 0
     
     @staticmethod
     def extract_task_type(title):
-        """提取任务类型"""
+        """
+        从任务标题中提取任务类型。
+        
+        Args:
+            title (str): 任务标题。
+            
+        Returns:
+            str: 提取的任务类型，如果无法匹配则返回 "其他"。
+        """
         if not title:
             return "其他"
         
@@ -72,10 +93,10 @@ class DataProcessor:
     
     def get_project_workdays(self):
         """
-        获取各项目人天统计
+        获取每个项目的人天总数统计。
         
         Returns:
-            dict: {项目名: 人天数}
+            dict: 一个字典，键是项目名，值是该项目的人天总数。
         """
         project_workdays = defaultdict(float)
         
@@ -88,10 +109,10 @@ class DataProcessor:
     
     def get_monthly_workdays(self):
         """
-        获取月度人天统计
+        获取每个月的人天总数统计。
         
         Returns:
-            dict: {月份: 人天数}
+            dict: 一个字典，键是月份（格式 'YYYY-MM'），值是该月的人天总数。
         """
         monthly_workdays = defaultdict(float)
         
@@ -105,17 +126,18 @@ class DataProcessor:
                 month_key = date.strftime('%Y-%m')
                 workdays = self.parse_workdays(item.get('人天'))
                 monthly_workdays[month_key] += workdays
-            except:
+            except ValueError:
                 continue
         
         return dict(monthly_workdays)
     
     def get_task_type_workdays(self):
         """
-        获取任务类型人天统计
+        获取每种任务类型的人天总数统计。
         
         Returns:
-            dict: {任务类型: 人天数}
+            dict: 一个字典，键是任务类型，值是该类型的人天总数。
+                  只包含人天数大于0的类型。
         """
         task_type_workdays = defaultdict(float)
         
@@ -125,15 +147,15 @@ class DataProcessor:
             workdays = self.parse_workdays(item.get('人天'))
             task_type_workdays[task_type] += workdays
         
-        # 过滤掉0值
+        # 过滤掉人天为0的任务类型
         return {k: v for k, v in task_type_workdays.items() if v > 0}
     
     def get_project_task_distribution(self):
         """
-        获取项目×任务类型分布数据
+        获取每个项目中各种任务类型的人天分布数据。
         
         Returns:
-            dict: {项目: {任务类型: 人天数}}
+            dict: 一个嵌套字典，格式为 {项目: {任务类型: 人天数}}。
         """
         project_task_data = defaultdict(lambda: defaultdict(float))
         
@@ -147,13 +169,13 @@ class DataProcessor:
     
     def get_top_tasks(self, top_n=15):
         """
-        获取人天最多的任务
+        获取人天数最多的前N个任务。
         
         Args:
-            top_n: 返回前N个任务
+            top_n (int, optional): 返回的任务数量。 Defaults to 15.
             
         Returns:
-            list: [(任务标题, 人天数), ...]
+            list: 一个列表，包含元组 (任务标题, 人天数)，按人天数降序排列。
         """
         task_workdays = []
         
@@ -168,13 +190,13 @@ class DataProcessor:
     
     def get_month_task_matrix(self):
         """
-        获取月份×任务类型矩阵数据
+        获取用于生成热力图的月份-任务类型矩阵数据。
         
         Returns:
-            tuple: (matrix, row_labels, col_labels)
-                - matrix: 二维数组
-                - row_labels: 任务类型列表
-                - col_labels: 月份列表
+            tuple: 包含三个元素的元组 (matrix, row_labels, col_labels)
+                - matrix (list): 二维列表，表示数据矩阵。
+                - row_labels (list): 任务类型列表（行标签）。
+                - col_labels (list): 月份列表（列标签）。
         """
         month_task_data = defaultdict(lambda: defaultdict(float))
         
@@ -189,29 +211,29 @@ class DataProcessor:
                 task_type = self.extract_task_type(item.get('标题', ''))
                 workdays = self.parse_workdays(item.get('人天'))
                 month_task_data[month_key][task_type] += workdays
-            except:
+            except ValueError:
                 continue
         
-        # 准备数据
+        # 准备行和列的标签
         months = sorted(month_task_data.keys())
         task_types = sorted(set(
             task for tasks in month_task_data.values() for task in tasks.keys()
         ))
         
-        # 构建矩阵
+        # 构建数据矩阵
         matrix = []
         for task_type in task_types:
-            row = [month_task_data[month][task_type] for month in months]
+            row = [month_task_data[month].get(task_type, 0) for month in months]
             matrix.append(row)
         
         return matrix, task_types, months
     
     def get_statistics(self):
         """
-        获取统计信息
+        获取数据的关键统计信息。
         
         Returns:
-            dict: 包含各种统计数据的字典
+            dict: 包含各种统计数据的字典，例如总人天、任务总数等。
         """
         total_workdays = sum(
             self.parse_workdays(item.get('人天')) for item in self.raw_data['data']
@@ -236,10 +258,10 @@ class DataProcessor:
     
     def get_dashboard_data(self):
         """
-        获取仪表盘所需的所有数据
+        获取生成仪表盘所需的所有数据。
         
         Returns:
-            dict: 包含所有图表数据
+            dict: 一个字典，包含用于仪表盘中各个图表的数据和统计信息。
         """
         return {
             'project_workdays': self.get_project_workdays(),
@@ -250,21 +272,27 @@ class DataProcessor:
 
 
 class TaskVisualization:
-    """任务数据可视化业务类"""
+    """
+    任务数据可视化业务类
+    
+    该类是业务逻辑的核心，它使用 DataProcessor 获取处理后的数据，
+    并调用 Visualizer 生成各种业务相关的图表。
+    它封装了从数据处理到图表生成的完整流程。
+    """
     
     def __init__(self, data_file=None, output_dir=None):
         """
-        初始化
+        初始化任务可视化类。
         
         Args:
-            data_file: 数据文件路径
-            output_dir: 输出目录
+            data_file (str, optional): 数据文件路径。 Defaults to None.
+            output_dir (str, optional): 图表输出目录。 Defaults to None.
         """
         self.processor = DataProcessor(data_file)
         self.visualizer = Visualizer(output_dir)
     
     def generate_project_chart(self):
-        """生成项目人天统计图"""
+        """生成并保存项目人天统计图（柱状图）。"""
         data = self.processor.get_project_workdays()
         return self.visualizer.bar_chart(
             data=data,
@@ -275,7 +303,7 @@ class TaskVisualization:
         )
     
     def generate_monthly_trend_chart(self):
-        """生成月度趋势图"""
+        """生成并保存月度人天趋势图（折线图）。"""
         data = self.processor.get_monthly_workdays()
         return self.visualizer.line_chart(
             data=data,
@@ -286,7 +314,7 @@ class TaskVisualization:
         )
     
     def generate_task_type_chart(self):
-        """生成任务类型占比图"""
+        """生成并保存任务类型人天占比图（饼图）。"""
         data = self.processor.get_task_type_workdays()
         return self.visualizer.pie_chart(
             data=data,
@@ -295,7 +323,7 @@ class TaskVisualization:
         )
     
     def generate_project_task_distribution(self):
-        """生成项目任务分布堆积图"""
+        """生成并保存项目任务类型分布图（堆积柱状图）。"""
         data = self.processor.get_project_task_distribution()
         return self.visualizer.stacked_bar_chart(
             data=data,
@@ -306,7 +334,7 @@ class TaskVisualization:
         )
     
     def generate_top_tasks_chart(self, top_n=15):
-        """生成任务排名图"""
+        """生成并保存人天数排名前N的任务图（横向柱状图）。"""
         data = dict(self.processor.get_top_tasks(top_n))
         return self.visualizer.horizontal_bar_chart(
             data=data,
@@ -317,7 +345,7 @@ class TaskVisualization:
         )
     
     def generate_heatmap(self):
-        """生成月份×任务类型热力图"""
+        """生成并保存月份-任务类型人天热力图。"""
         matrix, row_labels, col_labels = self.processor.get_month_task_matrix()
         return self.visualizer.heatmap(
             data=matrix,
@@ -328,11 +356,11 @@ class TaskVisualization:
         )
     
     def generate_dashboard(self):
-        """生成综合仪表盘"""
+        """生成并保存一个包含多个图表的综合仪表盘。"""
         dashboard_data = self.processor.get_dashboard_data()
         stats = dashboard_data['statistics']
         
-        # 准备统计文本
+        # 准备仪表盘中显示的统计文本
         stats_text = f"""
     数据统计概览
     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -345,21 +373,17 @@ class TaskVisualization:
     任务类型数: {stats['task_type_count']} 种
     """
         
-        # 配置图表
+        # 配置仪表盘中的各个图表
         charts_config = [
-            # 项目人天柱状图 (第1行,占两列)
             (331, 'bar', dashboard_data['project_workdays'], 
              {'title': '各项目人天统计', 'color': '#3498DB'}),
             
-            # 任务类型饼图 (第2行左)
             (332, 'pie', dashboard_data['task_type_workdays'],
              {'title': '任务类型占比'}),
             
-            # 月度趋势折线图 (第2行右)
             (333, 'line', dashboard_data['monthly_workdays'],
              {'title': '月度人天趋势', 'color': '#E74C3C'}),
             
-            # 统计信息文本 (第3行,占两列)
             (313, 'text', stats_text, {'fontsize': 11}),
         ]
         
@@ -370,7 +394,7 @@ class TaskVisualization:
         )
     
     def generate_basic_charts(self):
-        """生成基础图表(柱状图、折线图、饼图)"""
+        """生成所有基础图表（柱状图、折线图、饼图）。"""
         print("=" * 60)
         print("开始生成基础图表...")
         print("=" * 60)
@@ -386,7 +410,7 @@ class TaskVisualization:
         print("=" * 60)
     
     def generate_advanced_charts(self):
-        """生成高级图表(堆积图、热力图等)"""
+        """生成所有高级图表（堆积图、热力图、仪表盘等）。"""
         print("=" * 60)
         print("开始生成高级图表...")
         print("=" * 60)
@@ -403,7 +427,7 @@ class TaskVisualization:
         print("=" * 60)
     
     def generate_all_charts(self):
-        """生成所有图表"""
+        """生成所有定义的图表。"""
         print("=" * 60)
         print("云效任务数据可视化")
         print("=" * 60)
@@ -421,7 +445,11 @@ class TaskVisualization:
 
 
 def main():
-    """主程序"""
+    """
+    主程序入口
+    
+    提供一个命令行交互界面，允许用户选择生成不同类型的图表。
+    """
     task_viz = TaskVisualization(output_dir='output_云效')
     
     while True:
