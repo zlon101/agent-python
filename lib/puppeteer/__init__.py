@@ -13,6 +13,12 @@ from .universal_scraper import (
     create_scraper_config,
     get_universal_scraping_tools
 )
+from .merged_scraper import (
+    MergedScraper,
+    MergedScraperConfig,
+    NavigationMode,
+    create_merged_scraper_config
+)
 from .browser_steps import (
     BrowserStepExecutor,
     StepConfig,
@@ -37,6 +43,10 @@ __all__ = [
     'ScraperConfig',
     'FieldConfig',
     'create_scraper_config',
+    'MergedScraper',
+    'MergedScraperConfig',
+    'NavigationMode',
+    'create_merged_scraper_config',
     'BrowserStepExecutor',
     'StepConfig',
     'StepType',
