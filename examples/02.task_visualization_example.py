@@ -45,7 +45,7 @@ class DataProcessor:
                                        Defaults to None.
         """
         self.data_file = data_file or DATA_FILE
-        self.raw_data = None
+        self.raw_data = { "data": [] }
         self.load_data()
     
     def load_data(self):
@@ -100,6 +100,7 @@ class DataProcessor:
         """
         project_workdays = defaultdict(float)
         
+        assert self.raw_data is not None, "数据未加载，请先调用 load_data() 方法。"
         for item in self.raw_data['data']:
             project = item.get('项目', '未知项目')
             workdays = self.parse_workdays(item.get('人天'))
@@ -248,7 +249,7 @@ class DataProcessor:
         task_type_count = len(self.get_task_type_workdays())
         
         return {
-            'total_items': self.raw_data['metadata']['total_items'],
+            'total_items': len(self.raw_data['data']),
             'total_tasks': total_tasks,
             'total_workdays': total_workdays,
             'avg_workdays': avg_workdays,
