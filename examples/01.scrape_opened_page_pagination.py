@@ -28,65 +28,52 @@ async def scrape_opened_page_with_pagination():
     async with BrowserManager(mode="connect") as bm:
         # 列出所有打开的页面
         pages_info = await bm.list_all_pages()
-        
-        print(f"📋 当前打开的标签页 ({len(pages_info)} 个):\n")
-        for i, info in enumerate(pages_info, 1):
-            print(f"{i}. {info['title'][:60]}")
-            print(f"   {info['url']}\n")
-        
         if not pages_info:
             print("❌ 没有找到打开的标签页")
             return
         
-        # 连接到已打开的 SegmentFault 页面
-        print("🔍 查找 SegmentFault 页面...\n")
-        # https://devops.aliyun.com/projex/workitem#viewIdentifier=441e17ad4f72718076eedcf5
+        # 连接到已打开的页面
         page = await bm.get_or_create_page(target_url="devops.aliyun.com")
         
         if not page:
-            print("❌ 未找到 SegmentFault 页面")
+            print("❌ 未找到指定页面")
             return
         
         print(f"✅ 连接到页面: {page.url}")
-        print(f"   标题: {await page.title()}\n")
         
-        
+        parseBug = False
         # 云效任务配置
-        # fileName = "test_云效任务统计.json"
-        # config = create_scraper_config(
-        #     url=page.url,  # 使用当前页面的 URL
-        #     fields={
-        #         "标题": ".yunxiao-projex-workitem-title",
-        #         "人天": ".TextAndNumberModifier--statusName--yXxCXqU",
-        #         "项目": ".newTable--spaceItemsWrapper--gRll8b3 .newTable--itemButton--nbzOwGl",
-        #         "迭代": "td .workitemList--sprintTriger--ta4dk92",
-        #         "版本": "td[data-next-table-col='6']",
-        #         # "开始时间": ".newTable--dateTimeCell--j9OiSqh > span",
-        #         # "完成时间": "td[data-next-table-col='7'] .teamix-title span",
-        #     },
-        #     container_selector=".next-table-body tr.next-table-row",
-        #     next_button_selector=".next-btn.next-pagination-item.next-next",  # 下一页按钮
-        #     delay=4.0,  # 每页等待3秒
-        #     max_pages=2  # 抓取2页
-        # )
-        
-        # 云效缺陷配置
-        fileName = "test_云效bug统计.json"
+        fileName = "test_云效任务统计.json"
         config = create_scraper_config(
             url=page.url,
-            fields={
-                "标题": ".yunxiao-projex-workitem-title",
-                "项目": ".newTable--spaceItemsWrapper--gRll8b3 .newTable--itemButton--nbzOwGl",
-                # "人天": ".TextAndNumberModifier--statusName--yXxCXqU",
-                # "开始时间": ".newTable--dateTimeCell--j9OiSqh > span",
-                # "完成时间": "td[data-next-table-col='7'] .teamix-title span",
-                "bug产生原因": "td[data-next-table-col='9'] em",
-            },
             container_selector=".next-table-body tr.next-table-row",
             next_button_selector=".next-btn.next-pagination-item.next-next",  # 下一页按钮
-            delay=4.0,  # 每页等待3秒
-            max_pages=2  # 抓取2页
+            delay=3.0,  # 每页等待3秒
+            max_pages=2,  # 抓取2页
+            fields={
+                "标题": ".yunxiao-projex-workitem-title",
+                "人天": ".TextAndNumberModifier--statusName--yXxCXqU",
+                "项目": ".newTable--spaceItemsWrapper--gRll8b3 .newTable--itemButton--nbzOwGl",
+                "迭代": "td .workitemList--sprintTriger--ta4dk92",
+                "版本": "td[data-next-table-col='10']",
+            },
         )
+        
+        # 云效缺陷配置
+        if parseBug:
+            fileName = "test_云效bug统计.json"
+            config = create_scraper_config(
+                url=page.url,
+                container_selector=".next-table-body tr.next-table-row",
+                next_button_selector=".next-btn.next-pagination-item.next-next",  # 下一页按钮
+                delay=4.0,  # 每页等待3秒
+                max_pages=2,  # 抓取2页
+                fields={
+                    "标题": ".yunxiao-projex-workitem-title",
+                    "项目": ".newTable--spaceItemsWrapper--gRll8b3 .newTable--itemButton--nbzOwGl",
+                    "bug产生原因": "td[data-next-table-col='9'] em",
+                },
+            )
         
         # 创建抓取器
         scraper = UniversalScraper(page, config)
