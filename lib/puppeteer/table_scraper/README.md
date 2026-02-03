@@ -11,7 +11,7 @@ pip install beautifulsoup4
 ### 2. 将新文件添加到项目
 
 ```
-openai/
+agent-python/
 ├── lib/
 │   ├── table_scraper.py        # 表格提取核心
 │   ├── table_tools.py          # Agent 工具

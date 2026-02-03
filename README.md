@@ -17,7 +17,7 @@
 ## 📁 项目结构
 
 ```
-openai/
+agent-python/
 ├── .env.example                # 环境变量示例
 ├── .gitignore                  # Git 忽略配置
 ├── README.md                   # 本文件

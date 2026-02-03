@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
 from visualization import Visualizer
 
 # 默认的数据文件路径
-DATA_FILE = '/Users/admins/work/openai/test_云效任务类型人天统计.json'
+DATA_FILE = 'test_云效任务类型人天统计.json'
 
 # 任务类型映射，用于从任务标题中提取标准化的任务类型
 TASK_TYPE_MAPPING = {
