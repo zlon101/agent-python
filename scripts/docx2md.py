@@ -3,6 +3,8 @@ from markdownify import markdownify as md
 import os
 import sys
 
+# docx to md: https://github.com/microsoft/markitdown
+
 def convert_docx_to_markdown(docx_path, output_path=None):
     """
     将 docx 文件转换为 markdown，并处理标题风格
